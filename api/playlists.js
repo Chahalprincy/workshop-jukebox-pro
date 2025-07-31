@@ -57,12 +57,19 @@ router
       .status(403)
       .send("You are not authorized to view this reservation.");
   }
-  
+
     const tracks = await getTracksByPlaylistId(req.playlist.id);
     res.send(tracks);
   })
   .post(async (req, res) => {
     if (!req.body) return res.status(400).send("Request body is required.");
+
+    if (req.user.id !== req.playlist.user_id) {
+      return res
+        .status(403)
+        .send("You are not authorized to modify this playlist.");
+    }
+
 
     const { trackId } = req.body;
     if (!trackId) return res.status(400).send("Request body requires: trackId");
